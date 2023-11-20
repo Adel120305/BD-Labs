@@ -1,3 +1,5 @@
 /*Рассчитайте количество зарегистрированных объектов в теннисном клубе, стоимость аренды гостя в котором не менее 10.*/
 USE cd;
-SELECT COUNT(*) FROM facilities WHERE guestcost > 10
+SELECT COUNT(facid) as 'Кол-во зарегистрированных объектов' 
+FROM facilities 
+WHERE guestcost >= 10;
