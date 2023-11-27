@@ -2,4 +2,4 @@
 USE cd;
 SELECT f.facility
   FROM facilities f
-  WHERE F.facility LIKE '%tennis%'
+  WHERE F.facility LIKE '%Tennis%'
