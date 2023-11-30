@@ -4,7 +4,7 @@
 Без ROUND*/
 USE cd;
 SELECT book.facid AS 'ID объекта', fac.facility AS 'Название объекта', 
-  FORMAT(SUM(book.slots) / 2, 2) AS 'Общее количество часов'
+  ROUND(SUM(book.slots) / 2, 2) AS 'Общее количество часов'
 FROM bookings AS book
 INNER JOIN facilities AS fac ON book.facid = fac.facid
 GROUP BY book.facid, fac.facility
