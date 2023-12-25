@@ -45,11 +45,11 @@ DROP TABLE IF EXISTS CINEMAS.Top_film;
 USE CINEMAS;
 CREATE  OR REPLACE VIEW Top_film AS
   SELECT f.titleFIL AS 'Название фильма', 
-        SUM(a.number_of_tickets * p.cost) AS 'Выручка' 
+        MONTH(p.startDate) AS 'Месяц', SUM(a.number_of_tickets * p.cost) AS 'Выручка'
   FROM Films f 
   INNER JOIN Poster p ON f.idFIL = p.film 
   INNER JOIN Audience a ON p.idPOS = a.poster_number 
-  GROUP BY f.titleFIL 
+  GROUP BY f.titleFIL, p.startDate
   ORDER BY SUM(a.number_of_tickets * p.cost) DESC 
   LIMIT 1;
 /*VIEW_2: кинотеатры по количеству свободных мест в день. */
@@ -60,7 +60,6 @@ CREATE  OR REPLACE VIEW Available_seats AS
   FROM Cinemas C
   JOIN Poster P ON C.idCIN = P.cinema
   LEFT JOIN Audience A ON P.idPOS = A.poster_number
-  WHERE P.startDate <= '2022-01-19' AND P.endDate >= '2022-01-01'
   GROUP BY C.idCIN, A.visiting_day
   HAVING freeseats > 0
   ORDER BY freeseats DESC;
@@ -68,15 +67,15 @@ CREATE  OR REPLACE VIEW Available_seats AS
 DROP TABLE IF EXISTS CINEMAS.MAX_viewers;
 USE CINEMAS;
 CREATE  OR REPLACE VIEW MAX_viewers AS 
-  SELECT F.titleFIL, MAX(A.total_tickets) AS max_daily_audience
+  SELECT F.titleFIL, MAX(A.total_tickets) AS max_daily_audience, DAY(a.visiting_day)
   FROM Films F
   JOIN Poster P ON F.idFIL = P.film
   JOIN (
-      SELECT poster_number, SUM(number_of_tickets) AS total_tickets
+      SELECT poster_number, visiting_day, SUM(number_of_tickets) AS total_tickets
       FROM Audience
-      GROUP BY poster_number
+      GROUP BY poster_number, visiting_day
   ) A ON P.idPOS = A.poster_number
-  GROUP BY F.idFIL
+  GROUP BY F.titleFIL, a.visiting_day
   ORDER BY max_daily_audience DESC;
 
 /*Заполнение таблицы*/
@@ -133,5 +132,5 @@ VALUES
   (8, 8, '2022-01-08', 3),
   (9, 9, '2022-01-09', 2),
   (10, 10, '2022-01-10', 1);
-
+  
   UPDATE 
